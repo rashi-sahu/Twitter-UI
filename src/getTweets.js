@@ -3,7 +3,6 @@ const axios = require("axios");
 
 class GetTweets extends React.Component {
     constructor(props) {
-        console.log("come");
         super(props);
         this.state = {
             tweets: [],
@@ -12,13 +11,11 @@ class GetTweets extends React.Component {
     }
 
     callApi = async () => {
-        console.log("comesdzczfsfs1");
         try {
             const response = await axios.get(`http://127.0.0.1:8000/api/rashi`, { crossDomain: true });
             this.setState({
                 tweets: response.data,
             });
-            console.log(this.state.tweets)
         }
         catch (e) {
             this.setState({

@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import GetTweets from './getTweets';
+import LogIn from './logIn';
 
 ReactDOM.render(
-  <GetTweets />,
+  <LogIn />,
   document.getElementById('root')
 );
