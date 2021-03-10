@@ -1,11 +1,12 @@
 import React from 'react';
-const axios = require("axios");
+import { Link, Redirect} from 'react-router-dom';
+import GetTweets from './getTweets';
 
 class LogIn extends React.Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.state = {email:"", password:""};
+        this.state = {email:"", password:"", login:false};
     }
 
     handleChange = (event) => {
@@ -18,35 +19,55 @@ class LogIn extends React.Component {
         console.log(this.state.password);
         fetch('http://127.0.0.1:8000/api/login', {
             method: 'POST',
-            crossDomain: true,
+            mode: 'cors',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin':'*'
             },
             body: JSON.stringify(this.state),
-        }).then(response => response.json()).then(data => console.log(data));
+        }).then(
+            response => response.json()
+        ).then(data => {
+            localStorage.setItem('login', JSON.stringify({
+                login:true,
+                token:data.token
+            }))
+            this.setState({login:true});
+        });
+    }
+
+    componentDidMount(){
+        let store = JSON.parse(localStorage.getItem('login'));
+        if(store && store.login){
+            this.setState({login: store.login});
+        }
     }
 
     render() {
+        const isLoggedIn = this.state.login;
+        console.log("is logged in ");
+        console.log(isLoggedIn);
+        if(!isLoggedIn){
         return (
-            <div class="container">
-                <div class="col-sm-6 col-sm-offset-3">
+            <div className="container">
+                <div className="col-sm-6 col-sm-offset-3">
 
-                    <h1><span class="fa fa-sign-in"></span> Login</h1>
+                    <h1><span className="fa fa-sign-in"></span> Login</h1>
 
-                    <form onSubmit={this.handleSubmit} class="needs-validation" novalidate>
-                        <div class="form-group">
+                    <form className="needs-validation" noValidate>
+                        <div className="form-group">
                             <label>Email</label>
-                            <input type="text" class="form-control" onChange={this.handleChange} id="email" name="email" placeholder="name@example.com" required />
-                            <div class="invalid-feedback">Please fill out email.</div>
+                            <input type="text" className="form-control" onChange={this.handleChange} id="email" name="email" placeholder="name@example.com" required />
+                            <div className="invalid-feedback">Please fill out email.</div>
                         </div>
                         <div class="form-group">
                             <label>Password</label>
-                            <input type="password" class="form-control" onChange={this.handleChange} id="password" name="password" placeholder="password" required />
-                            <div class="invalid-feedback">Please fill out password.</div>
+                            <input type="password" className="form-control" onChange={this.handleChange} id="password" name="password" placeholder="password" required />
+                            <div className="invalid-feedback">Please fill out password.</div>
                         </div>
 
-                        <button type="submit" class="btn btn-warning btn-lg">Login</button>
+                        <Link to="/login" className="btn btn-warning btn-lg" onClick={this.handleSubmit} >Login</Link>
                     </form>
 
                     <hr />
@@ -57,6 +78,12 @@ class LogIn extends React.Component {
                 </div>
             </div>
         );
+        }
+        else{
+            return ( 
+                <Redirect push to="/gettweets" Component = {<GetTweets login={this.state.login}/>}/>
+            );
+        }
     }
 }
 

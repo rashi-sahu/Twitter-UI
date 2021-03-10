@@ -1,4 +1,7 @@
 import React from 'react';
+import LogIn from './logIn';
+import LogOut from './logout';
+import { Redirect} from 'react-router-dom';
 const axios = require("axios");
 
 class GetTweets extends React.Component {
@@ -29,16 +32,27 @@ class GetTweets extends React.Component {
     }
 
     render() {
-        if(!this.state.error){
+        if(!this.state.error && this.props.login){
             return (
-                <ul>
-                    {this.state.tweets.map(d => (<li>{d.description}</li>))}
-                </ul>
+                <div>
+                    <ul>
+                        {this.state.tweets.map(d => (<li key={d.id}>{d.description}</li>))}
+                    </ul>
+                    <LogOut/>
+                </div>
+            );
+        }
+        else if (!this.props.login){
+            return (
+                <Redirect push to="/login" Component = {<LogIn />}/>
             );
         }
         else{
             return(
-                <p>{JSON.stringify(this.state.error.message)}</p>
+                <div>
+                    <p>{JSON.stringify(this.state.error.message)}</p>
+                    <LogOut/>
+                </div>
             );
         }
     }
